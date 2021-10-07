@@ -1,0 +1,84 @@
+{
+  "$schema": "https://hypar.io/Schemas/Function.json",
+  "id": "624f294c-7d75-47df-b325-d849f7d599d6",
+  "name": "Exit Stairs",
+  "description": "The ExitStairs function.",
+  "language": "C#",
+  "model_dependencies": [
+    {
+      "autohide": false,
+      "name": "Floors",
+      "optional": false
+    }
+  ],
+  "input_schema": {
+    "type": "object",
+    "properties": {}
+  },
+  "outputs": [
+    {
+      "unit_type": "volume",
+      "name": "Volume",
+      "description": "The volume.",
+      "type": "number"
+    }
+  ],
+  "overrides": {
+    "Occupancy": {
+      "context": "[*discriminator=Elements.Floor]",
+      "dependency": "Floors",
+      "identity": {
+        "Transform": {
+          "$ref": "https://prod-api.hypar.io/schemas/Transform"
+        },
+        "Profile": {
+          "type": "object",
+          "properties": {
+            "Perimeter": {
+              "$ref": "https://prod-api.hypar.io/schemas/Polygon"
+            }
+          }
+        }
+      },
+      "schema": {
+        "Occupancy": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "Stairs": {
+      "context": "[*discriminator=Elements.ExitStair]",
+      "identity": {
+        "Boundary": {
+          "$ref": "https://prod-api.hypar.io/schemas/Polygon"
+        }
+      },
+      "behaviors": {
+        "add": {
+          "schema": {
+            "Origin": {
+              "$ref": "https://hypar.io/Schemas/Geometry/Vector3.json"
+            }
+          }
+        },
+        "remove": true
+      },
+      "schema": {
+        "Name": {
+          "type": "string"
+        },
+        "Load": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "element_types": [
+    "https://prod-api.hypar.io/schemas/ExitStair"
+  ],
+  "repository_url": "https://github.com/hypar-io/function",
+  "last_updated": "0001-01-01T00:00:00",
+  "cli_version": "1.0.0"
+}
