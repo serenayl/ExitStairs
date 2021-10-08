@@ -30,15 +30,42 @@ namespace ExitStairs
                 return output;
             }
 
+            var messages = new List<string>();
+
             // Figure out appropriate override/input values per floor
             foreach (var floorProxy in floorProxies)
             {
                 var floor = floorProxy.Element;
-                var floorOverride = GetOverrideForFloor(floor, occupancyOverrides);
+                var floorOverride = GetOverrideForFloor(floor, occupancyOverrides, out var message);
+                messages.Add(message);
                 floorProxy.AddOverrideValue(floorOverride.GetName(), floorOverride.Value);
                 output.Model.AddElement(floorProxy);
                 proxiesWithOverrides.Add((floorProxy, floorOverride));
             }
+
+            var map = new Dictionary<string, int>();
+            foreach (var message in messages)
+            {
+                if (message != null)
+                {
+                    if (!map.ContainsKey(message))
+                    {
+                        map.Add(message, 1);
+                    }
+                    else
+                    {
+                        map[message]++;
+                    }
+
+                }
+            }
+
+            foreach (var key in map.Keys)
+            {
+                output.Warnings.Add($"{key} ({map.GetValueOrDefault(key)})");
+            }
+
+            var distinctMessages = messages.Distinct();
 
             var cores = inputModels["Core"].AllElementsOfType<Elements.ServiceCore>();
 
@@ -118,8 +145,9 @@ namespace ExitStairs
             return output;
         }
 
-        public static OccupancyOverride GetOverrideForFloor(Floor floor, System.Collections.Generic.IList<OccupancyOverride> overrides)
+        public static OccupancyOverride GetOverrideForFloor(Floor floor, System.Collections.Generic.IList<OccupancyOverride> overrides, out string message)
         {
+            message = null;
             foreach (var ovd in overrides)
             {
                 if (ovd.Identity != null && ovd.Identity.Transform.Equals(floor.Transform) && ovd.Identity.Profile.Perimeter.IsAlmostEqualTo(floor.Profile.Perimeter))
@@ -129,6 +157,7 @@ namespace ExitStairs
             }
             var area = floor.Profile.Perimeter.Area() * Math.Pow(Units.MetersToFeet(1), 2);
             var factor = 150;
+            message = $"An area factor of {factor} for business use has been applied by default per Table 1004.5: Business Areas. Please verify your occupancies carefully to size your stairs accordingly.";
             return new OccupancyOverride(Guid.NewGuid().ToString(), null, new OccupancyValue((int)Math.Ceiling(area / factor)));
         }
 
@@ -286,6 +315,10 @@ namespace ExitStairs
             numTreads = numRisers - numLandings;
             realRiserHeight = maxElevationChange / numRisers;
             widthFactor = input.Sprinklered ? 0.2 : 0.3;
+            if (input.Sprinklered)
+            {
+                messages.Add($"A width factor of {widthFactor} was applied due to sprinkler system status.");
+            }
             this.calculateDimensions();
         }
 
@@ -320,12 +353,14 @@ namespace ExitStairs
         private void calculateDimensions()
         {
             minTreadWidth = Units.InchesToMeters(widthFactor * minLoadPerStair);
-            messages.Add($"Applied a width factor of {widthFactor} to a load of {minLoadPerStair} occ.");
+            messages.Add($"Applied a width factor of {widthFactor} to a load of {minLoadPerStair} occ: { GetInches(minTreadWidth) } min.");
             realMinTreadWidth = Math.Max(minTreadWidth, absoluteMinimumTreadWidth);
             if (realMinTreadWidth == absoluteMinimumTreadWidth)
             {
                 messages.Add($"Width was increased to {GetInches(absoluteMinimumTreadWidth)} { (absoluteMinimumTreadWidth == AccessibleMinimumTreadWidth ? "accessible" : "user-specified") } min.");
-            } else {
+            }
+            else
+            {
                 messages.Add($"Calculated width meets {GetInches(absoluteMinimumTreadWidth)} { (absoluteMinimumTreadWidth == AccessibleMinimumTreadWidth ? "accessible" : "user-specified") } min.");
             }
             treadWidth = realMinTreadWidth;
@@ -355,7 +390,8 @@ namespace ExitStairs
             return maxElevationChange;
         }
 
-        public static string GetInches(double number) {
+        public static string GetInches(double number)
+        {
             return $"{Math.Round(Units.MetersToInches(number), 1)}\"";
         }
     }
