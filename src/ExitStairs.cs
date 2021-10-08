@@ -237,13 +237,15 @@ namespace ExitStairs
     /** Calculate configs for a stair */
     public class StairConfig
     {
+        public static double AccessibleMinimumTreadWidth = Units.InchesToMeters(44); // per 1011.2;
+
         public double extrusionHeight;
         public double firstTreads;
         public double floorDepth;
         public double landingDepth;
         public double length;
         public double maxElevationChange;
-        public double absoluteMinimumTreadWidth = Units.InchesToMeters(44); // per 1011.2
+        public double absoluteMinimumTreadWidth = AccessibleMinimumTreadWidth;
         public double minTreadWidth;
         public double realLandingDepth;
         public double realMinTreadWidth;
@@ -322,7 +324,9 @@ namespace ExitStairs
             realMinTreadWidth = Math.Max(minTreadWidth, absoluteMinimumTreadWidth);
             if (realMinTreadWidth == absoluteMinimumTreadWidth)
             {
-                messages.Add($"Width was increased to {GetInches(absoluteMinimumTreadWidth)} required minimum.");
+                messages.Add($"Width was increased to {GetInches(absoluteMinimumTreadWidth)} { (absoluteMinimumTreadWidth == AccessibleMinimumTreadWidth ? "accessible" : "user-specified") } min.");
+            } else {
+                messages.Add($"Calculated width meets {GetInches(absoluteMinimumTreadWidth)} { (absoluteMinimumTreadWidth == AccessibleMinimumTreadWidth ? "accessible" : "user-specified") } min.");
             }
             treadWidth = realMinTreadWidth;
             capacity = (int)Math.Floor(Units.MetersToInches(treadWidth / widthFactor));
