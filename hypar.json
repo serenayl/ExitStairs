@@ -9,6 +9,11 @@
       "autohide": false,
       "name": "Floors",
       "optional": false
+    },
+    {
+      "autohide": true,
+      "name": "Core",
+      "optional": false
     }
   ],
   "input_schema": {
@@ -100,7 +105,8 @@
     }
   },
   "element_types": [
-    "https://prod-api.hypar.io/schemas/ExitStair"
+    "https://prod-api.hypar.io/schemas/ExitStair",
+    "https://prod-api.hypar.io/schemas/ServiceCore"
   ],
   "repository_url": "https://github.com/hypar-io/function",
   "last_updated": "0001-01-01T00:00:00",

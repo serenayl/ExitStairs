@@ -40,14 +40,17 @@ namespace ExitStairs
                 proxiesWithOverrides.Add((floorProxy, floorOverride));
             }
 
-            var globals = new StairConfig(input, proxiesWithOverrides);
+            var cores = inputModels["Core"].AllElementsOfType<Elements.ServiceCore>();
 
+            var globals = new StairConfig(input, proxiesWithOverrides, cores.Count());
             var stairPairs = new List<(ExitStair stair, StairConfig config)>();
 
-            // Create starter stair
-            var first = proxiesWithOverrides.First();
-            var firstStairTransform = first.proxy.Element.Transform.Moved(first.proxy.Element.Profile.Perimeter.Centroid());
-            stairPairs.Add((MakeStair(globals, firstStairTransform), globals));
+            // Create starter stairs
+            foreach (var core in inputModels["Core"].AllElementsOfType<Elements.ServiceCore>())
+            {
+                var transform = new Transform(core.Profile.Perimeter.Bounds().Min);
+                stairPairs.Add((MakeStair(globals, transform), globals));
+            }
 
             // Add manual stairs
             if (input.Overrides?.Additions?.Stairs != null)
@@ -106,7 +109,8 @@ namespace ExitStairs
                 }
             }
 
-            foreach (var stairPair in stairPairs) {
+            foreach (var stairPair in stairPairs)
+            {
                 output.Model.AddElement(stairPair.stair);
                 output.Model.AddElements(GetStairExtraVisualization(stairPair.config, stairPair.stair));
             }
@@ -123,7 +127,9 @@ namespace ExitStairs
                     return ovd;
                 }
             }
-            return new OccupancyOverride(Guid.NewGuid().ToString(), null, new OccupancyValue(100));
+            var area = floor.Profile.Perimeter.Area() * Math.Pow(Units.MetersToFeet(1), 2);
+            var factor = 150;
+            return new OccupancyOverride(Guid.NewGuid().ToString(), null, new OccupancyValue((int)Math.Ceiling(area / factor)));
         }
 
         public static ExitStair MakeStair(StairConfig g, Transform transform)
@@ -147,11 +153,20 @@ namespace ExitStairs
 
             if (stair.AdditionalProperties.TryGetValue("Minimum Tread Width", out var _))
             {
-                stair.AdditionalProperties["Minimum Tread Width"] = c.minimumWidth;
+                stair.AdditionalProperties["Minimum Tread Width"] = c.absoluteMinimumTreadWidth;
             }
             else
             {
-                stair.AdditionalProperties.Add("Minimum Tread Width", c.minimumWidth);
+                stair.AdditionalProperties.Add("Minimum Tread Width", c.absoluteMinimumTreadWidth);
+            }
+
+            if (stair.AdditionalProperties.TryGetValue("Logic", out var _))
+            {
+                stair.AdditionalProperties["Logic"] = String.Join("\n", c.messages);
+            }
+            else
+            {
+                stair.AdditionalProperties.Add("Logic", String.Join("\n", c.messages));
             }
 
             return stair;
@@ -228,7 +243,7 @@ namespace ExitStairs
         public double landingDepth;
         public double length;
         public double maxElevationChange;
-        public double minimumWidth = Units.InchesToMeters(44); // per 1011.2
+        public double absoluteMinimumTreadWidth = Units.InchesToMeters(44); // per 1011.2
         public double minTreadWidth;
         public double realLandingDepth;
         public double realMinTreadWidth;
@@ -247,6 +262,7 @@ namespace ExitStairs
         public int numRisers;
         public int numStairsTotal;
         public int numTreads;
+        public List<string> messages = new List<string>();
 
         /// <summary>
         /// Create equal numbers of configs
@@ -255,14 +271,14 @@ namespace ExitStairs
         /// <param name="proxy"></param>
         /// <param name="proxiesWithOverrides"></param>
         /// <returns></returns>
-        public StairConfig(ExitStairsInputs input, List<(ElementProxy<Elements.Floor> proxy, OccupancyOverride ovd)> proxiesWithOverrides)
+        public StairConfig(ExitStairsInputs input, List<(ElementProxy<Elements.Floor> proxy, OccupancyOverride ovd)> proxiesWithOverrides, int numCores)
         {
             // Calculate global truths
-            numStairsTotal = 1 + (input.Overrides?.Additions?.Stairs?.Count ?? 0) - (input.Overrides?.Removals?.Stairs?.Count ?? 0);
+            numStairsTotal = numCores + (input.Overrides?.Additions?.Stairs?.Count ?? 0) - (input.Overrides?.Removals?.Stairs?.Count ?? 0);
             maxLoad = proxiesWithOverrides.Max(fp => fp.ovd.Value.Occupancy);
             minLoadPerStair = (int)Math.Ceiling((double)maxLoad / (double)numStairsTotal);
             maxElevationChange = GetMaxElevationChange(proxiesWithOverrides, out startElevationAtMaxElevationChange);
-            extrusionHeight = proxiesWithOverrides.Max(fp => fp.proxy.Element.Elevation + maxElevationChange + 1);
+            extrusionHeight = proxiesWithOverrides.Max(fp => fp.proxy.Element.Elevation + maxElevationChange + 2);
             floorDepth = proxiesWithOverrides.FirstOrDefault().proxy.Element.Thickness;
             numRisers = (int)Math.Ceiling(maxElevationChange / targetRiserHeight);
             numTreads = numRisers - numLandings;
@@ -285,8 +301,15 @@ namespace ExitStairs
             realRiserHeight = g.realRiserHeight;
             widthFactor = g.widthFactor;
 
+            foreach (var m in g.messages)
+            {
+                messages.Add(m);
+            }
+
             // override props
-            minimumWidth = ovd.Value.MinimumTreadWidth;
+            absoluteMinimumTreadWidth = ovd.Value.MinimumTreadWidth;
+
+            messages.Add($"Applying an override with a minimum tread width of {GetInches(absoluteMinimumTreadWidth)}.");
 
             // calculate dependent props
             this.calculateDimensions();
@@ -295,7 +318,12 @@ namespace ExitStairs
         private void calculateDimensions()
         {
             minTreadWidth = Units.InchesToMeters(widthFactor * minLoadPerStair);
-            realMinTreadWidth = Math.Max(minTreadWidth, minimumWidth);
+            messages.Add($"Applied a width factor of {widthFactor} to a load of {minLoadPerStair} occ.");
+            realMinTreadWidth = Math.Max(minTreadWidth, absoluteMinimumTreadWidth);
+            if (realMinTreadWidth == absoluteMinimumTreadWidth)
+            {
+                messages.Add($"Width was increased to {GetInches(absoluteMinimumTreadWidth)} required minimum.");
+            }
             treadWidth = realMinTreadWidth;
             capacity = (int)Math.Floor(Units.MetersToInches(treadWidth / widthFactor));
             landingDepth = realMinTreadWidth;
@@ -321,6 +349,10 @@ namespace ExitStairs
                 }
             }
             return maxElevationChange;
+        }
+
+        public static string GetInches(double number) {
+            return $"{Math.Round(Units.MetersToInches(number), 1)}\"";
         }
     }
 }
