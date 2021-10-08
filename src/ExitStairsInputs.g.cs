@@ -483,16 +483,16 @@ namespace ExitStairs
     
     {
         [Newtonsoft.Json.JsonConstructor]
-        public StairOverridesValue(string @name, double @minimumWidth)
+        public StairOverridesValue(string @name, double @minimumTreadWidth)
         {
             var validator = Validator.Instance.GetFirstValidatorForType<StairOverridesValue>();
             if(validator != null)
             {
-                validator.PreConstruct(new object[]{ @name, @minimumWidth});
+                validator.PreConstruct(new object[]{ @name, @minimumTreadWidth});
             }
         
             this.Name = @name;
-            this.MinimumWidth = @minimumWidth;
+            this.MinimumTreadWidth = @minimumTreadWidth;
         
             if(validator != null)
             {
@@ -503,9 +503,9 @@ namespace ExitStairs
         [Newtonsoft.Json.JsonProperty("Name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Name { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("Minimum Width", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("Minimum Tread Width", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Range(0.1D, double.MaxValue)]
-        public double MinimumWidth { get; set; }
+        public double MinimumTreadWidth { get; set; }
     
     
     }

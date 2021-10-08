@@ -145,13 +145,13 @@ namespace ExitStairs
             stair.Capacity = c.capacity;
             stair.Load = c.minLoadPerStair;
 
-            if (stair.AdditionalProperties.TryGetValue("Minimum Width", out var _))
+            if (stair.AdditionalProperties.TryGetValue("Minimum Tread Width", out var _))
             {
-                stair.AdditionalProperties["Minimum Width"] = c.minimumWidth;
+                stair.AdditionalProperties["Minimum Tread Width"] = c.minimumWidth;
             }
             else
             {
-                stair.AdditionalProperties.Add("Minimum Width", c.minimumWidth);
+                stair.AdditionalProperties.Add("Minimum Tread Width", c.minimumWidth);
             }
 
             return stair;
@@ -286,7 +286,7 @@ namespace ExitStairs
             widthFactor = g.widthFactor;
 
             // override props
-            minimumWidth = ovd.Value.MinimumWidth;
+            minimumWidth = ovd.Value.MinimumTreadWidth;
 
             // calculate dependent props
             this.calculateDimensions();

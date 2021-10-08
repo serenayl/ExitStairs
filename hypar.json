@@ -91,7 +91,7 @@
         "Name": {
           "type": "string"
         },
-        "Minimum Width": {
+        "Minimum Tread Width": {
           "type": "number",
           "$hyparUnitType": "length",
           "minimum": 0.1
