@@ -13,7 +13,13 @@
   ],
   "input_schema": {
     "type": "object",
-    "properties": {}
+    "properties": {
+      "Sprinklered*": {
+        "type": "boolean",
+        "default": false,
+        "description": "If true, this will use the reduced 0.2 egress capacity factor per IBC 1005.3.1. This applies for other than Group H and I-2 occupancies where the building is equipped throughout with an automatic sprinkler system installed in accordance with Section 903.3.1.1 or 903.3.1.2 and an emergency voice/alarm communication system in accordance with Section 907.5.2.2."
+      }
+    }
   },
   "outputs": [
     {
@@ -50,8 +56,8 @@
     "Stairs": {
       "context": "[*discriminator=Elements.ExitStair]",
       "identity": {
-        "Boundary": {
-          "$ref": "https://prod-api.hypar.io/schemas/Polygon"
+        "OriginalPosition": {
+          "$ref": "https://hypar.io/Schemas/Geometry/Vector3.json"
         }
       },
       "behaviors": {
@@ -65,12 +71,30 @@
         "remove": true
       },
       "schema": {
+        "Transform": {
+          "$ref": "https://prod-api.hypar.io/schemas/Transform",
+          "$hyparConstraints": {
+            "enablePosition": true,
+            "enableRotation": true
+          }
+        }
+      }
+    },
+    "Stair Overrides": {
+      "context": "[*discriminator=Elements.ExitStair]",
+      "identity": {
+        "OriginalPosition": {
+          "$ref": "https://hypar.io/Schemas/Geometry/Vector3.json"
+        }
+      },
+      "schema": {
         "Name": {
           "type": "string"
         },
-        "Load": {
-          "type": "integer",
-          "minimum": 0
+        "Minimum Width": {
+          "type": "number",
+          "$hyparUnitType": "length",
+          "minimum": 0.1
         }
       }
     }

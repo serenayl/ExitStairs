@@ -28,15 +28,16 @@ namespace ExitStairs
     {
         [Newtonsoft.Json.JsonConstructor]
         
-        public ExitStairsInputs(Overrides @overrides, string bucketName, string uploadsBucket, Dictionary<string, string> modelInputKeys, string gltfKey, string elementsKey, string ifcKey):
+        public ExitStairsInputs(bool @sprinklered, Overrides @overrides, string bucketName, string uploadsBucket, Dictionary<string, string> modelInputKeys, string gltfKey, string elementsKey, string ifcKey):
         base(bucketName, uploadsBucket, modelInputKeys, gltfKey, elementsKey, ifcKey)
         {
             var validator = Validator.Instance.GetFirstValidatorForType<ExitStairsInputs>();
             if(validator != null)
             {
-                validator.PreConstruct(new object[]{ @overrides});
+                validator.PreConstruct(new object[]{ @sprinklered, @overrides});
             }
         
+            this.Sprinklered = @sprinklered;
             this.Overrides = @overrides;
         
             if(validator != null)
@@ -44,6 +45,10 @@ namespace ExitStairs
                 validator.PostConstruct(this);
             }
         }
+    
+        /// <summary>If true, this will use the reduced 0.2 egress capacity factor per IBC 1005.3.1. This applies for other than Group H and I-2 occupancies where the building is equipped throughout with an automatic sprinkler system installed in accordance with Section 903.3.1.1 or 903.3.1.2 and an emergency voice/alarm communication system in accordance with Section 907.5.2.2.</summary>
+        [Newtonsoft.Json.JsonProperty("Sprinklered*", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool Sprinklered { get; set; } = false;
     
         [Newtonsoft.Json.JsonProperty("overrides", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Overrides Overrides { get; set; }
@@ -57,18 +62,19 @@ namespace ExitStairs
     
     {
         [Newtonsoft.Json.JsonConstructor]
-        public Overrides(OverrideAdditions @additions, OverrideRemovals @removals, IList<OccupancyOverride> @occupancy, IList<StairsOverride> @stairs)
+        public Overrides(OverrideAdditions @additions, OverrideRemovals @removals, IList<OccupancyOverride> @occupancy, IList<StairsOverride> @stairs, IList<StairOverridesOverride> @stairOverrides)
         {
             var validator = Validator.Instance.GetFirstValidatorForType<Overrides>();
             if(validator != null)
             {
-                validator.PreConstruct(new object[]{ @additions, @removals, @occupancy, @stairs});
+                validator.PreConstruct(new object[]{ @additions, @removals, @occupancy, @stairs, @stairOverrides});
             }
         
             this.Additions = @additions;
             this.Removals = @removals;
             this.Occupancy = @occupancy;
             this.Stairs = @stairs;
+            this.StairOverrides = @stairOverrides;
         
             if(validator != null)
             {
@@ -87,6 +93,9 @@ namespace ExitStairs
     
         [Newtonsoft.Json.JsonProperty("Stairs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public IList<StairsOverride> Stairs { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("Stair Overrides", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public IList<StairOverridesOverride> StairOverrides { get; set; }
     
     
     }
@@ -215,6 +224,42 @@ namespace ExitStairs
     
         [Newtonsoft.Json.JsonProperty("Value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public StairsValue Value { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.21.0 (Newtonsoft.Json v12.0.0.0)")]
+    
+    public partial class StairOverridesOverride 
+    
+    {
+        [Newtonsoft.Json.JsonConstructor]
+        public StairOverridesOverride(string @id, StairOverridesIdentity @identity, StairOverridesValue @value)
+        {
+            var validator = Validator.Instance.GetFirstValidatorForType<StairOverridesOverride>();
+            if(validator != null)
+            {
+                validator.PreConstruct(new object[]{ @id, @identity, @value});
+            }
+        
+            this.Id = @id;
+            this.Identity = @identity;
+            this.Value = @value;
+        
+            if(validator != null)
+            {
+                validator.PostConstruct(this);
+            }
+        }
+    
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("Identity", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public StairOverridesIdentity Identity { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("Value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public StairOverridesValue Value { get; set; }
     
     
     }
@@ -354,15 +399,15 @@ namespace ExitStairs
     
     {
         [Newtonsoft.Json.JsonConstructor]
-        public StairsIdentity(Polygon @boundary)
+        public StairsIdentity(Vector3 @originalPosition)
         {
             var validator = Validator.Instance.GetFirstValidatorForType<StairsIdentity>();
             if(validator != null)
             {
-                validator.PreConstruct(new object[]{ @boundary});
+                validator.PreConstruct(new object[]{ @originalPosition});
             }
         
-            this.Boundary = @boundary;
+            this.OriginalPosition = @originalPosition;
         
             if(validator != null)
             {
@@ -370,8 +415,8 @@ namespace ExitStairs
             }
         }
     
-        [Newtonsoft.Json.JsonProperty("Boundary", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public Polygon Boundary { get; set; }
+        [Newtonsoft.Json.JsonProperty("OriginalPosition", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Vector3 OriginalPosition { get; set; }
     
     
     }
@@ -382,16 +427,72 @@ namespace ExitStairs
     
     {
         [Newtonsoft.Json.JsonConstructor]
-        public StairsValue(string @name, int @load)
+        public StairsValue(Transform @transform)
         {
             var validator = Validator.Instance.GetFirstValidatorForType<StairsValue>();
             if(validator != null)
             {
-                validator.PreConstruct(new object[]{ @name, @load});
+                validator.PreConstruct(new object[]{ @transform});
+            }
+        
+            this.Transform = @transform;
+        
+            if(validator != null)
+            {
+                validator.PostConstruct(this);
+            }
+        }
+    
+        [Newtonsoft.Json.JsonProperty("Transform", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Transform Transform { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.21.0 (Newtonsoft.Json v12.0.0.0)")]
+    
+    public partial class StairOverridesIdentity 
+    
+    {
+        [Newtonsoft.Json.JsonConstructor]
+        public StairOverridesIdentity(Vector3 @originalPosition)
+        {
+            var validator = Validator.Instance.GetFirstValidatorForType<StairOverridesIdentity>();
+            if(validator != null)
+            {
+                validator.PreConstruct(new object[]{ @originalPosition});
+            }
+        
+            this.OriginalPosition = @originalPosition;
+        
+            if(validator != null)
+            {
+                validator.PostConstruct(this);
+            }
+        }
+    
+        [Newtonsoft.Json.JsonProperty("OriginalPosition", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Vector3 OriginalPosition { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.21.0 (Newtonsoft.Json v12.0.0.0)")]
+    
+    public partial class StairOverridesValue 
+    
+    {
+        [Newtonsoft.Json.JsonConstructor]
+        public StairOverridesValue(string @name, double @minimumWidth)
+        {
+            var validator = Validator.Instance.GetFirstValidatorForType<StairOverridesValue>();
+            if(validator != null)
+            {
+                validator.PreConstruct(new object[]{ @name, @minimumWidth});
             }
         
             this.Name = @name;
-            this.Load = @load;
+            this.MinimumWidth = @minimumWidth;
         
             if(validator != null)
             {
@@ -402,9 +503,9 @@ namespace ExitStairs
         [Newtonsoft.Json.JsonProperty("Name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Name { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("Load", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Range(0, int.MaxValue)]
-        public int Load { get; set; }
+        [Newtonsoft.Json.JsonProperty("Minimum Width", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Range(0.1D, double.MaxValue)]
+        public double MinimumWidth { get; set; }
     
     
     }
