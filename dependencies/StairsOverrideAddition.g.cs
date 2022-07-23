@@ -1,14 +1,16 @@
 using Elements;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace ExitStairs
 {
 	/// <summary>
-	/// Override metadata for StairsOverride
+	/// Override metadata for StairsOverrideAddition
 	/// </summary>
-	public partial class StairsOverride : IOverride
+	public partial class StairsOverrideAddition : IOverride
 	{
-        public static string Name = "Stairs";
+        public static string Name = "Stairs Addition";
         public static string Dependency = null;
         public static string Context = "[*discriminator=Elements.ExitStair]";
 		public static string Paradigm = "Edit";
@@ -26,4 +28,5 @@ namespace ExitStairs
 		}
 
 	}
+
 }

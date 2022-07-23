@@ -14,13 +14,13 @@ using System.Collections.Generic;
 
 namespace ExitStairs
 {
-    public class ExitStairsOutputs: ResultsBase
+    public class ExitStairsOutputs: SystemResults
     {
 		/// <summary>
 		/// The volume.
 		/// </summary>
 		[JsonProperty("Volume")]
-		public double Volume {get;}
+		public double Volume {get; set;}
 
 
 

@@ -2,8 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\dependencies\ExitStairs.Dependencies.csproj" />
-    <ProjectReference Include="..\..\..\..\..\Github\hypar\Elements\Elements\src\Elements.csproj" />
-    <ProjectReference Include="..\..\..\..\..\Github\hypar\Hypar\Hypar.Functions\src\Hypar.Functions.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
