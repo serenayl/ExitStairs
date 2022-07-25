@@ -11,6 +11,7 @@ using Elements.Serialization.JSON;
 using Hypar.Functions;
 using Hypar.Functions.Execution;
 using Hypar.Functions.Execution.AWS;
+using Hypar.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace ExitStairs
             }
         
             this.Sprinklered = @sprinklered;
-            this.Overrides = @overrides;
+            this.Overrides = @overrides ?? this.Overrides;
         
             if(validator != null)
             {
@@ -50,9 +51,8 @@ namespace ExitStairs
         [Newtonsoft.Json.JsonProperty("Sprinklered*", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Sprinklered { get; set; } = false;
     
-        [Newtonsoft.Json.JsonProperty("overrides", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public Overrides Overrides { get; set; }
-    
+        [Newtonsoft.Json.JsonProperty("overrides", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Overrides Overrides { get; set; } = new Overrides();
     
     }
     
@@ -61,6 +61,8 @@ namespace ExitStairs
     public partial class Overrides 
     
     {
+        public Overrides() { }
+        
         [Newtonsoft.Json.JsonConstructor]
         public Overrides(OverrideAdditions @additions, OverrideRemovals @removals, IList<OccupancyOverride> @occupancy, IList<StairsOverride> @stairs, IList<StairOverridesOverride> @stairOverrides)
         {
@@ -70,11 +72,11 @@ namespace ExitStairs
                 validator.PreConstruct(new object[]{ @additions, @removals, @occupancy, @stairs, @stairOverrides});
             }
         
-            this.Additions = @additions;
-            this.Removals = @removals;
-            this.Occupancy = @occupancy;
-            this.Stairs = @stairs;
-            this.StairOverrides = @stairOverrides;
+            this.Additions = @additions ?? this.Additions;
+            this.Removals = @removals ?? this.Removals;
+            this.Occupancy = @occupancy ?? this.Occupancy;
+            this.Stairs = @stairs ?? this.Stairs;
+            this.StairOverrides = @stairOverrides ?? this.StairOverrides;
         
             if(validator != null)
             {
@@ -82,21 +84,20 @@ namespace ExitStairs
             }
         }
     
-        [Newtonsoft.Json.JsonProperty("Additions", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public OverrideAdditions Additions { get; set; }
+        [Newtonsoft.Json.JsonProperty("Additions", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public OverrideAdditions Additions { get; set; } = new OverrideAdditions();
     
-        [Newtonsoft.Json.JsonProperty("Removals", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public OverrideRemovals Removals { get; set; }
+        [Newtonsoft.Json.JsonProperty("Removals", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public OverrideRemovals Removals { get; set; } = new OverrideRemovals();
     
-        [Newtonsoft.Json.JsonProperty("Occupancy", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public IList<OccupancyOverride> Occupancy { get; set; }
+        [Newtonsoft.Json.JsonProperty("Occupancy", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public IList<OccupancyOverride> Occupancy { get; set; } = new List<OccupancyOverride>();
     
-        [Newtonsoft.Json.JsonProperty("Stairs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public IList<StairsOverride> Stairs { get; set; }
+        [Newtonsoft.Json.JsonProperty("Stairs", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public IList<StairsOverride> Stairs { get; set; } = new List<StairsOverride>();
     
-        [Newtonsoft.Json.JsonProperty("Stair Overrides", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public IList<StairOverridesOverride> StairOverrides { get; set; }
-    
+        [Newtonsoft.Json.JsonProperty("Stair Overrides", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public IList<StairOverridesOverride> StairOverrides { get; set; } = new List<StairOverridesOverride>();
     
     }
     
@@ -105,6 +106,8 @@ namespace ExitStairs
     public partial class OverrideAdditions 
     
     {
+        public OverrideAdditions() { }
+        
         [Newtonsoft.Json.JsonConstructor]
         public OverrideAdditions(IList<StairsOverrideAddition> @stairs)
         {
@@ -114,7 +117,7 @@ namespace ExitStairs
                 validator.PreConstruct(new object[]{ @stairs});
             }
         
-            this.Stairs = @stairs;
+            this.Stairs = @stairs ?? this.Stairs;
         
             if(validator != null)
             {
@@ -122,9 +125,8 @@ namespace ExitStairs
             }
         }
     
-        [Newtonsoft.Json.JsonProperty("Stairs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public IList<StairsOverrideAddition> Stairs { get; set; }
-    
+        [Newtonsoft.Json.JsonProperty("Stairs", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public IList<StairsOverrideAddition> Stairs { get; set; } = new List<StairsOverrideAddition>();
     
     }
     
@@ -133,6 +135,8 @@ namespace ExitStairs
     public partial class OverrideRemovals 
     
     {
+        public OverrideRemovals() { }
+        
         [Newtonsoft.Json.JsonConstructor]
         public OverrideRemovals(IList<StairsOverrideRemoval> @stairs)
         {
@@ -142,7 +146,7 @@ namespace ExitStairs
                 validator.PreConstruct(new object[]{ @stairs});
             }
         
-            this.Stairs = @stairs;
+            this.Stairs = @stairs ?? this.Stairs;
         
             if(validator != null)
             {
@@ -150,9 +154,8 @@ namespace ExitStairs
             }
         }
     
-        [Newtonsoft.Json.JsonProperty("Stairs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public IList<StairsOverrideRemoval> Stairs { get; set; }
-    
+        [Newtonsoft.Json.JsonProperty("Stairs", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public IList<StairsOverrideRemoval> Stairs { get; set; } = new List<StairsOverrideRemoval>();
     
     }
     
@@ -189,7 +192,6 @@ namespace ExitStairs
         [Newtonsoft.Json.JsonProperty("Value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public OccupancyValue Value { get; set; }
     
-    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.21.0 (Newtonsoft.Json v12.0.0.0)")]
@@ -224,7 +226,6 @@ namespace ExitStairs
     
         [Newtonsoft.Json.JsonProperty("Value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public StairsValue Value { get; set; }
-    
     
     }
     
@@ -261,7 +262,6 @@ namespace ExitStairs
         [Newtonsoft.Json.JsonProperty("Value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public StairOverridesValue Value { get; set; }
     
-    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.21.0 (Newtonsoft.Json v12.0.0.0)")]
@@ -297,7 +297,6 @@ namespace ExitStairs
         [Newtonsoft.Json.JsonProperty("Value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public StairsOverrideAdditionValue Value { get; set; }
     
-    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.21.0 (Newtonsoft.Json v12.0.0.0)")]
@@ -328,7 +327,6 @@ namespace ExitStairs
     
         [Newtonsoft.Json.JsonProperty("Identity", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public StairsIdentity Identity { get; set; }
-    
     
     }
     
@@ -361,7 +359,6 @@ namespace ExitStairs
         [Newtonsoft.Json.JsonProperty("Profile", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public OccupancyIdentityProfile Profile { get; set; }
     
-    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.21.0 (Newtonsoft.Json v12.0.0.0)")]
@@ -390,7 +387,6 @@ namespace ExitStairs
         [System.ComponentModel.DataAnnotations.Range(0, int.MaxValue)]
         public int Occupancy { get; set; }
     
-    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.21.0 (Newtonsoft.Json v12.0.0.0)")]
@@ -417,7 +413,6 @@ namespace ExitStairs
     
         [Newtonsoft.Json.JsonProperty("OriginalPosition", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Vector3 OriginalPosition { get; set; }
-    
     
     }
     
@@ -446,7 +441,6 @@ namespace ExitStairs
         [Newtonsoft.Json.JsonProperty("Transform", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Transform Transform { get; set; }
     
-    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.21.0 (Newtonsoft.Json v12.0.0.0)")]
@@ -473,7 +467,6 @@ namespace ExitStairs
     
         [Newtonsoft.Json.JsonProperty("OriginalPosition", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Vector3 OriginalPosition { get; set; }
-    
     
     }
     
@@ -507,7 +500,6 @@ namespace ExitStairs
         [System.ComponentModel.DataAnnotations.Range(0.1D, double.MaxValue)]
         public double MinimumTreadWidth { get; set; }
     
-    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.21.0 (Newtonsoft.Json v12.0.0.0)")]
@@ -534,7 +526,6 @@ namespace ExitStairs
     
         [Newtonsoft.Json.JsonProperty("Origin", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Vector3 Origin { get; set; }
-    
     
     }
     
@@ -571,7 +562,5 @@ namespace ExitStairs
             get { return _additionalProperties; }
             set { _additionalProperties = value; }
         }
-    
-    
     }
 }

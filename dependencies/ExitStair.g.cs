@@ -10,6 +10,7 @@ using Elements.Geometry.Solids;
 using Elements.Spatial;
 using Elements.Validators;
 using Elements.Serialization.JSON;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,11 +22,11 @@ namespace Elements
     #pragma warning disable // Disable all warnings
 
     /// <summary>WIPWIP More Serena trying things</summary>
-    [Newtonsoft.Json.JsonConverter(typeof(Elements.Serialization.JSON.JsonInheritanceConverter), "discriminator")]
+    [JsonConverter(typeof(Elements.Serialization.JSON.JsonInheritanceConverter), "discriminator")]
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.21.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class ExitStair : GeometricElement
     {
-        [Newtonsoft.Json.JsonConstructor]
+        [JsonConstructor]
         public ExitStair(Polygon @boundary, int @capacity, double @load, Transform @transform = null, Material @material = null, Representation @representation = null, bool @isElementDefinition = false, System.Guid @id = default, string @name = null)
             : base(transform, material, representation, isElementDefinition, id, name)
         {
@@ -33,16 +34,22 @@ namespace Elements
             this.Capacity = @capacity;
             this.Load = @load;
             }
+        
+        // Empty constructor
+        public ExitStair()
+            : base()
+        {
+        }
     
-        [Newtonsoft.Json.JsonProperty("Boundary", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("Boundary", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Polygon Boundary { get; set; }
     
         /// <summary>Number of people it can actually carry, after minimum dimensions are put into place.</summary>
-        [Newtonsoft.Json.JsonProperty("Capacity", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("Capacity", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int Capacity { get; set; }
     
         /// <summary>Number of people it must be sized to carry.</summary>
-        [Newtonsoft.Json.JsonProperty("Load", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("Load", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double Load { get; set; }
     
     
